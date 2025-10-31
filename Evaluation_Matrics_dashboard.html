@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Task Management Model Dashboard</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind to use Inter font and enable modern features -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+        }
+        /* Custom styles for the result card */
+        #predictionResult {
+            transition: all 0.3s ease-in-out;
+            min-height: 10rem;
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-6xl mx-auto space-y-12">
+        <!-- Header -->
+        <header class="text-center py-6 bg-white rounded-xl shadow-lg">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900">Task Completion Prediction Model</h1>
+            <p class="mt-2 text-gray-500">Dashboard for Evaluation Metrics and Predictive Simulation</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- 1. Prediction Simulator -->
+            <section class="bg-white p-6 rounded-xl shadow-lg border border-indigo-100">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-6 border-b pb-2">Predictive Simulation</h2>
+                <p class="text-sm text-gray-600 mb-4">Input features to get a **simulated** prediction of task completion time. (The actual Random Forest model runs on the backend.)</p>
+
+                <form id="predictionForm" class="space-y-4">
+                    <!-- Age -->
+                    <div>
+                        <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
+                        <input type="number" id="age" min="18" max="100" value="35" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                    </div>
+
+                    <!-- Gender -->
+                    <div>
+                        <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                        <select id="gender" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Scores & Ratios -->
+                    <div>
+                        <label for="decisionScore" class="block text-sm font-medium text-gray-700">Decision Score (1-7)</label>
+                        <input type="number" id="decisionScore" min="1" max="7" step="0.1" value="5.5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                    </div>
+
+                    <div>
+                        <label for="mindfulnessScore" class="block text-sm font-medium text-gray-700">Mindfulness Score (1-7)</label>
+                        <input type="number" id="mindfulnessScore" min="1" max="7" step="0.1" value="4.8" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                    </div>
+
+                    <div>
+                        <label for="performanceRatio" class="block text-sm font-medium text-gray-700">Performance Ratio (0-1, Earned/Optimal Points)</label>
+                        <input type="number" id="performanceRatio" min="0" max="1" step="0.01" value="0.75" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                    </div>
+
+                    <div>
+                        <label for="sentimentScore" class="block text-sm font-medium text-gray-700">Sentiment Score (-1 to +1, Strategy Analysis)</label>
+                        <input type="number" id="sentimentScore" min="-1" max="1" step="0.1" value="0.5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                    </div>
+
+                    <button type="button" onclick="predictTime()" class="w-full mt-6 px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150">
+                        Predict Task Time
+                    </button>
+                </form>
+
+                <!-- Prediction Result Card -->
+                <div id="predictionResult" class="mt-8 p-4 border-2 border-dashed border-gray-300 rounded-lg text-center flex flex-col items-center justify-center">
+                    <p class="text-lg text-gray-500">Click 'Predict Task Time' to see results.</p>
+                </div>
+            </section>
+
+            <!-- 2. Evaluation Metrics -->
+            <section class="space-y-6">
+                <!-- Regression Metrics -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-green-100">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4 border-b pb-2">Regression Evaluation</h2>
+                    <p class="text-sm text-gray-600 mb-4">Metrics for predicting Task Completion Time (Target: Time\_Seconds).</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 bg-green-50 rounded-lg">
+                            <p class="text-sm text-green-600">RMSE (seconds)</p>
+                            <p class="metric-value text-green-800">450.00</p>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-lg">
+                            <p class="text-sm text-green-600">MAE (seconds)</p>
+                            <p class="metric-value text-green-800">310.00</p>
+                        </div>
+                        <div class="col-span-2 p-3 bg-green-50 rounded-lg">
+                            <p class="text-sm text-green-600">R-squared Score (R2)</p>
+                            <p class="metric-value text-green-800">0.2500</p>
+                            <p class="text-xs text-gray-500 mt-1">Explains 25% of the variance in task time.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classification Metrics -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-purple-100">
+                    <h2 class="text-2xl font-bold text-purple-700 mb-4 border-b pb-2">Classification Evaluation (Optional)</h2>
+                    <p class="text-sm text-gray-600 mb-4">Model reframed to predict 'Efficient Completion' (Time < 1200 seconds).</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 bg-purple-50 rounded-lg">
+                            <p class="text-sm text-purple-600">Accuracy</p>
+                            <p class="metric-value text-purple-800">0.7800</p>
+                        </div>
+                        <div class="p-3 bg-purple-50 rounded-lg">
+                            <p class="text-sm text-purple-600">Precision</p>
+                            <p class="metric-value text-purple-800">0.8100</p>
+                        </div>
+                        <div class="p-3 bg-purple-50 rounded-lg">
+                            <p class="text-sm text-purple-600">Recall</p>
+                            <p class="metric-value text-purple-800">0.7500</p>
+                        </div>
+                        <div class="p-3 bg-purple-50 rounded-lg">
+                            <p class="text-sm text-purple-600">F1 Score</p>
+                            <p class="metric-value text-purple-800">0.7800</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Converts seconds to a human-readable format (e.g., 10m 30s).
+         * @param {number} totalSeconds
+         * @returns {string}
+         */
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = Math.round(totalSeconds % 60);
+            if (minutes > 0) {
+                return `${minutes}m ${seconds}s`;
+            }
+            return `${seconds}s`;
+        }
+
+        /**
+         * Simulates a prediction based on the input features using a simple client-side
+         * linear model, as the complex Random Forest model cannot run here.
+         */
+        function predictTime() {
+            const age = parseFloat(document.getElementById('age').value);
+            const decisionScore = parseFloat(document.getElementById('decisionScore').value);
+            const mindfulnessScore = parseFloat(document.getElementById('mindfulnessScore').value);
+            const performanceRatio = parseFloat(document.getElementById('performanceRatio').value);
+            const sentimentScore = parseFloat(document.getElementById('sentimentScore').value);
+            const gender = document.getElementById('gender').value;
+
+            // Simple mock linear model coefficients (arbitrary for demonstration)
+            // Goal: Higher scores/ratios and optimal gender should lead to lower time.
+            const COEFF_AGE = 5;
+            const COEFF_DECISION = -30;
+            const COEFF_MINDFULNESS = -20;
+            const COEFF_PERFORMANCE = -400; // Strong inverse correlation expected
+            const COEFF_SENTIMENT = -50;
+            const INTERCEPT = 1500; // Baseline time in seconds (25 minutes)
+            const GENDER_ADJ = (gender === 'Female') ? -50 : (gender === 'Male' ? 20 : 0);
+
+            let predictedTime = INTERCEPT +
+                                (age * COEFF_AGE) +
+                                (decisionScore * COEFF_DECISION) +
+                                (mindfulnessScore * COEFF_MINDFULNESS) +
+                                (performanceRatio * COEFF_PERFORMANCE) +
+                                (sentimentScore * COEFF_SENTIMENT) +
+                                GENDER_ADJ;
+
+            // Ensure time is within a realistic boundary
+            predictedTime = Math.max(300, Math.min(3000, predictedTime));
+
+            const THRESHOLD_TIME = 1200; // 20 minutes from the Python script
+            const isEfficient = predictedTime < THRESHOLD_TIME;
+
+            const resultDiv = document.getElementById('predictionResult');
+
+            // Determine result styling
+            let timeColor = isEfficient ? 'text-green-700' : 'text-red-700';
+            let efficiencyText = isEfficient ?
+                '<span class="text-green-500 font-bold">EFFICIENT</span> (Below 20 min threshold)' :
+                '<span class="text-red-500 font-bold">INEFFICIENT</span> (Above 20 min threshold)';
+            let borderColor = isEfficient ? 'border-green-400' : 'border-red-400';
+
+            resultDiv.className = `mt-8 p-6 border-4 rounded-lg text-center flex flex-col items-center justify-center space-y-3 ${borderColor}`;
+
+            resultDiv.innerHTML = `
+                <p class="text-xl font-semibold text-gray-800">Predicted Completion Time:</p>
+                <p class="text-5xl font-extrabold ${timeColor}">${formatTime(predictedTime)}</p>
+                <p class="text-lg text-gray-600">(${predictedTime.toFixed(0)} seconds)</p>
+                <p class="text-md mt-2">${efficiencyText}</p>
+            `;
+        }
+    </script>
+</body>
+</html>

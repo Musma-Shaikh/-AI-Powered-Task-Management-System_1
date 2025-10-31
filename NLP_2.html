@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced NLP Pipeline Visualizer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .step-card {
+            @apply bg-white p-6 rounded-xl shadow-xl border border-gray-200 transition-all duration-300 hover:shadow-2xl;
+        }
+        .step-title {
+            @apply text-xl font-bold text-indigo-700 border-b-2 border-indigo-100 pb-3 mb-4;
+        }
+        .token-chip {
+            /* Increased margin from m-1 to m-2 for better word separation */
+            @apply inline-block px-3 py-1 m-2 text-sm rounded-lg font-medium shadow-md;
+        }
+        /* Custom styles for POS/Lemma list */
+        .result-list div {
+            @apply flex justify-between items-center py-2 px-3 border-b border-gray-100;
+        }
+        .result-list div:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8 flex justify-center">
+
+    <div id="app" class="w-full max-w-6xl space-y-8">
+        <header class="text-center bg-white p-8 rounded-xl shadow-2xl">
+            <h1 class="text-4xl font-extrabold text-gray-900">NLP Feature Engineering Pipeline</h1>
+            <p class="text-lg text-gray-600 mt-2">Tokenization, POS Tagging, and Lemmatization visualized in real-time.</p>
+        </header>
+
+        <!-- Input -->
+        <div class="step-card">
+            <label for="textInput" class="block text-lg font-semibold text-gray-700 mb-3">Enter Strategy/Feedback Text:</label>
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <input type="text" id="textInput" value="The developers are running different algorithms and matrices."
+                       class="flex-grow p-4 border-2 border-indigo-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 text-gray-800"
+                       placeholder="E.g., The data scientists were analyzing the documents.">
+                <button onclick="analyzeText()" id="analyzeButton"
+                        class="px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+                    Process Text
+                </button>
+            </div>
+            <p id="feedback" class="text-red-500 mt-3 text-sm hidden">Please enter some text to begin the analysis.</p>
+        </div>
+
+        <!-- Output -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- 1. Tokenization -->
+            <div class="step-card">
+                <h2 class="step-title text-indigo-600">1. Tokenization</h2>
+                <p class="text-gray-500 mb-4 text-sm">Text split into meaningful units (tokens).</p>
+                <div id="tokensOutput" class="flex flex-wrap border rounded-lg p-2 bg-indigo-50 min-h-[100px]">
+                    <p class="text-gray-400">Tokens will appear here.</p>
+                </div>
+            </div>
+
+            <!-- POS Tagging & Lemmatization Combined View -->
+            <div class="lg:col-span-2 step-card">
+                <h2 class="step-title text-purple-700">2. POS Tagging & 3. Lemmatization</h2>
+                <p class="text-gray-500 mb-4 text-sm">Identifying grammatical role (POS) and base dictionary form (Lemma).</p>
+
+                <div class="bg-gray-50 rounded-lg border">
+                    <!-- Header -->
+                    <div class="flex justify-between font-semibold text-sm text-gray-700 bg-gray-200 rounded-t-lg p-3">
+                        <span class="w-1/3">Original Token</span>
+                        <span class="w-1/3 text-center">POS Tag</span>
+                        <span class="w-1/3 text-right">Lemma</span>
+                    </div>
+
+                    <!-- Results List -->
+                    <div id="posLemmaOutput" class="result-list text-sm text-gray-800 min-h-[100px]">
+                        <div class="text-center text-gray-400">Results will display in this structured list.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- NLP SIMULATION LOGIC (Simplified for browser demonstration) ---
+
+        /**
+         * Simple Tokenizer: Splits text by spaces and separates punctuation.
+         */
+        function simpleTokenize(text) {
+            // A more robust tokenizer regex that handles contraction and punctuation better
+            const tokens = text.toLowerCase()
+                               .match(/[a-z0-9]+(?:['’][a-z]+)?|[.,!?;]/g) || [];
+
+            // Remove nulls if any (shouldn't happen with the new regex but safe)
+            return tokens.filter(t => t);
+        }
+
+        /**
+         * Simplified Lemmatizer/POS Tagger: Uses basic rules and a small dictionary.
+         * NOTE: This is NOT a real linguistic library (like NLTK/spaCy) and is highly simplified.
+         */
+        function simpleLemmatizeAndTag(tokens) {
+            const results = [];
+
+            // Simplified POS Tags (based on NLTK/Penn Treebank for common types)
+            const commonTags = {
+                'the': 'DT', 'a': 'DT', 'and': 'CC', 'to': 'TO', 'is': 'VBZ', 'are': 'VBP',
+                ',': ',', '.': '.', ';': ';', '!': '!', '?': '?'
+            };
+
+            // Very limited Lemma dictionary for demonstration
+            const lemmaDict = {
+                'developers': 'developer', 'scientists': 'scientist', 'algorithms': 'algorithm',
+                'matrices': 'matrix', 'problems': 'problem', 'was': 'be', 'were': 'be',
+                'ran': 'run'
+            };
+
+            for (const token of tokens) {
+                let lemma = token;
+                let pos = 'NN'; // Default to Noun
+
+                // 1. Check for common functional words
+                if (commonTags[token]) {
+                    pos = commonTags[token];
+                    // No lemmatization needed for these
+                    results.push({ token, pos, lemma });
+                    continue;
+                }
+
+                // 2. Check for dictionary lemmas
+                if (lemmaDict[token]) {
+                    lemma = lemmaDict[token];
+                    // POS tagging: VBD for past tense verb, NNS/NN for nouns
+                    pos = (token.endsWith('s') || token.endsWith('es')) ? 'NNS' : 'NN';
+                    if (['was', 'were', 'ran'].includes(token)) pos = 'VBD';
+                }
+
+                // 3. Simple morphological rules (covers most common transformations)
+                else if (token.endsWith('ing')) {
+                    pos = 'VBG'; // Verb, gerund/present participle
+                    lemma = token.slice(0, -3) + (['develop', 'run'].includes(token.slice(0, -3)) ? '' : 'e'); // Simplistic attempt to revert -ing
+                } else if (token.endsWith('ed')) {
+                    pos = 'VBD'; // Verb, past tense
+                    lemma = token.slice(0, -2);
+                } else if (token.endsWith('s') && token.length > 3) {
+                    pos = 'NNS'; // Noun, plural
+                    lemma = token.slice(0, -1);
+                }
+
+                // 4. Default POS adjustments (for words not caught above)
+                if (pos === 'NN' && /^[a-z]+$/.test(token)) {
+                    pos = token.endsWith('ly') ? 'RB' : pos; // Adverbs
+                    pos = ['complex', 'different', 'various'].includes(token) ? 'JJ' : pos; // Adjectives
+                }
+
+                results.push({ token, pos, lemma });
+            }
+            return results;
+        }
+
+        // --- Main Analysis Function ---
+        function analyzeText() {
+            const inputElement = document.getElementById('textInput');
+            const rawText = inputElement.value.trim();
+            const feedbackElement = document.getElementById('feedback');
+
+            if (rawText === "") {
+                feedbackElement.classList.remove('hidden');
+                document.getElementById('tokensOutput').innerHTML = `<p class="text-gray-400">Tokens will appear here.</p>`;
+                document.getElementById('posLemmaOutput').innerHTML = `<div class="text-center text-gray-400">Results will display in this structured list.</div>`;
+                return;
+            } else {
+                feedbackElement.classList.add('hidden');
+            }
+
+            // 1. Tokenization
+            const tokens = simpleTokenize(rawText);
+            document.getElementById('tokensOutput').innerHTML = tokens.map(token =>
+                `<span class="token-chip bg-indigo-200 text-indigo-800">${token}</span>`
+            ).join('');
+
+            // 2 & 3. POS Tagging and Lemmatization
+            const analysisResults = simpleLemmatizeAndTag(tokens);
+
+            // Display structured results
+            const outputHTML = analysisResults.map(item => `
+                <div>
+                    <span class="w-1/3 font-medium">${item.token}</span>
+                    <span class="w-1/3 text-center token-chip bg-purple-100 text-purple-700">${item.pos}</span>
+                    <span class="w-1/3 text-right token-chip bg-green-100 text-green-700">${item.lemma}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('posLemmaOutput').innerHTML = outputHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', analyzeText);
+    </script>
+</body>
+</html>

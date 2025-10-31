@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Categorization ML Frontend</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #1f2937; /* Gray-800 */
+        }
+        .btn-predict:hover {
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8 flex items-center justify-center">
+
+    <div class="w-full max-w-4xl bg-white shadow-2xl rounded-xl p-6 md:p-10 border border-gray-100">
+
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Task Category Prediction</h1>
+            <p class="text-gray-500">Input task and participant metrics to predict the Task Category (Complete, Order, or Turn).</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Input Form Section -->
+            <div id="input-form" class="md:col-span-2 space-y-4">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Feature Inputs</h2>
+
+                <!-- Numerical Features -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Earned Points -->
+                    <div class="input-group">
+                        <label for="EarnedPoints" class="block text-sm">EarnedPoints</label>
+                        <input type="number" id="EarnedPoints" value="650" step="1" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                    </div>
+                    <!-- Optimal Points -->
+                    <div class="input-group">
+                        <label for="OptimalPoints" class="block text-sm">OptimalPoints</label>
+                        <input type="number" id="OptimalPoints" value="1200" step="1" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                    </div>
+                    <!-- Time -->
+                    <div class="input-group">
+                        <label for="Time" class="block text-sm">Time (ms)</label>
+                        <input type="number" id="Time" value="15000" step="1" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                    </div>
+                    <!-- Correlation -->
+                    <div class="input-group">
+                        <label for="Correlation" class="block text-sm">Correlation (e.g., 0.5)</label>
+                        <input type="number" id="Correlation" value="0.2" step="0.01" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                    </div>
+                    <!-- Bonus -->
+                    <div class="input-group">
+                        <label for="Bonus" class="block text-sm">Bonus (0 to 1)</label>
+                        <input type="number" id="Bonus" value="0.8" step="0.01" max="1" min="0" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                    </div>
+                    <!-- DSS_Mean -->
+                    <div class="input-group">
+                        <label for="DSS_Mean" class="block text-sm">DSS Mean (1 to 7)</label>
+                        <input type="number" id="DSS_Mean" value="4.5" step="0.1" max="7" min="1" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-700 pt-4 border-t mt-4">Categorical Features</h3>
+
+                <!-- Categorical Features -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Gender -->
+                    <div class="input-group">
+                        <label for="Gender" class="block text-sm">Gender</label>
+                        <select id="Gender" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <option value="missing">Missing</option>
+                        </select>
+                    </div>
+                    <!-- Education -->
+                    <div class="input-group">
+                        <label for="Education" class="block text-sm">Education</label>
+                        <select id="Education" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                            <option value="Bachelor's degree">Bachelor's degree</option>
+                            <option value="Master's degree">Master's degree</option>
+                            <option value="High school diploma or equivalent">High school diploma or equivalent</option>
+                            <option value="Doctorate">Doctorate</option>
+                            <option value="Non-university diploma/certificate">Non-university diploma/certificate</option>
+                            <option value="missing">Missing</option>
+                        </select>
+                    </div>
+                    <!-- CorrelationCondition -->
+                    <div class="input-group">
+                        <label for="CorrelationCondition" class="block text-sm">Correlation Condition</label>
+                        <select id="CorrelationCondition" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                            <option value="0">0</option>
+                            <option value="0.7">0.7</option>
+                            <option value="-0.7">-0.7</option>
+                            <option value="missing">Missing</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Prediction Button -->
+                <button onclick="simulatePrediction()"
+                    class="btn-predict w-full px-6 py-3 mt-6 text-white font-semibold bg-green-600 rounded-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out">
+                    Get Task Category Prediction
+                </button>
+            </div>
+
+            <!-- Output Section -->
+            <div id="output-panel" class="md:col-span-1 p-6 bg-gray-50 border border-gray-200 rounded-xl">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Prediction Result</h2>
+
+                <!-- Main Result Display -->
+                <div id="main-result" class="text-center py-4 bg-white border border-dashed border-gray-300 rounded-lg">
+                    <p class="text-gray-500 font-medium">Click 'Get Prediction' to view results.</p>
+                </div>
+
+                <!-- Probability Chart (Simulated) -->
+                <div class="mt-6 space-y-3">
+                    <h3 class="text-base font-semibold text-gray-700">Confidence Breakdown (Simulated)</h3>
+                    <div id="prob-chart" class="space-y-2">
+                        <!-- Probabilities will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Message Box for Alerts (No alert()) -->
+                <div id="message-box" class="mt-4 p-3 hidden bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm"></div>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        /**
+         * Simulates the prediction logic for the frontend.
+         * In a real application, this function would make a fetch() call to a Python backend API (e.g., Flask/FastAPI).
+         */
+        function simulatePrediction() {
+            const resultDiv = document.getElementById('main-result');
+            const chartDiv = document.getElementById('prob-chart');
+            const messageBox = document.getElementById('message-box');
+            messageBox.classList.add('hidden');
+
+            // 1. Gather all inputs
+            const inputs = {
+                EarnedPoints: parseFloat(document.getElementById('EarnedPoints').value),
+                OptimalPoints: parseFloat(document.getElementById('OptimalPoints').value),
+                Time: parseFloat(document.getElementById('Time').value),
+                Correlation: parseFloat(document.getElementById('Correlation').value),
+                Bonus: parseFloat(document.getElementById('Bonus').value),
+                DSS_Mean: parseFloat(document.getElementById('DSS_Mean').value),
+                Gender: document.getElementById('Gender').value,
+                Education: document.getElementById('Education').value,
+                CorrelationCondition: document.getElementById('CorrelationCondition').value
+            };
+
+            // Basic Input Validation
+            if (Object.values(inputs).some(val => val === null || val === undefined || isNaN(val) && typeof val === 'number')) {
+                messageBox.textContent = 'Please ensure all numerical fields have valid numbers.';
+                messageBox.classList.remove('hidden');
+                return;
+            }
+
+            // 2. Simulate Prediction Logic (This is where the API call would go)
+            // Mock logic: High EarnedPoints/OptimalPoints ratio or high Bonus tends toward 'COMPLETE'
+            let prediction = 'TURN';
+            let p_complete = 0.33;
+            let p_order = 0.33;
+            let p_turn = 0.34;
+
+            const ratio = inputs.EarnedPoints / inputs.OptimalPoints;
+
+            if (ratio > 0.75 && inputs.Bonus > 0.5) {
+                // High performance and high bonus = likely COMPLETE
+                prediction = 'COMPLETE';
+                p_complete = 0.75 + (Math.random() * 0.1);
+                p_order = 0.15 - (Math.random() * 0.05);
+                p_turn = 1 - p_complete - p_order;
+            } else if (inputs.Time < 10000 && inputs.CorrelationCondition === '-0.7') {
+                // Low time and negative condition = likely ORDER
+                prediction = 'ORDER';
+                p_order = 0.55 + (Math.random() * 0.1);
+                p_complete = 0.25 - (Math.random() * 0.05);
+                p_turn = 1 - p_complete - p_order;
+            } else {
+                // Default or ambiguous = likely TURN
+                prediction = 'TURN';
+                p_turn = 0.50 + (Math.random() * 0.1);
+                p_complete = 0.30 - (Math.random() * 0.05);
+                p_order = 1 - p_complete - p_turn;
+            }
+
+            // Normalize probabilities to ensure sum is exactly 1 (due to floating point math)
+            const totalProb = p_complete + p_order + p_turn;
+            p_complete /= totalProb;
+            p_order /= totalProb;
+            p_turn /= totalProb;
+
+            const probabilities = {
+                'COMPLETE': p_complete,
+                'ORDER': p_order,
+                'TURN': p_turn,
+            };
+
+            // 3. Update Result Display
+            const resultText = prediction.toUpperCase();
+
+            resultDiv.innerHTML = `
+                <p class="text-sm text-gray-600">Predicted Category</p>
+                <p class="text-4xl font-extrabold mt-1
+                    ${resultText === 'COMPLETE' ? 'text-green-600' :
+                      resultText === 'ORDER' ? 'text-red-600' : 'text-blue-600'}">
+                    ${resultText}
+                </p>
+                <p class="text-xs text-gray-400 mt-2">Simulated Confidence: ${(probabilities[prediction.toUpperCase()] * 100).toFixed(2)}%</p>
+            `;
+
+            // 4. Update Probability Chart
+            chartDiv.innerHTML = '';
+
+            // Sort classes by probability descending for clear visual
+            const sortedClasses = Object.entries(probabilities)
+                .sort(([, a], [, b]) => b - a);
+
+            sortedClasses.forEach(([cls, prob]) => {
+                const percentage = (prob * 100).toFixed(1);
+                const color = cls === 'COMPLETE' ? 'bg-green-500' :
+                              cls === 'ORDER' ? 'bg-red-500' : 'bg-blue-500';
+
+                chartDiv.innerHTML += `
+                    <div>
+                        <div class="flex justify-between text-xs font-medium">
+                            <span class="capitalize">${cls}</span>
+                            <span>${percentage}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                            <div class="h-2.5 rounded-full ${color} transition-all duration-500 ease-out" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+
+</body>
+</html>

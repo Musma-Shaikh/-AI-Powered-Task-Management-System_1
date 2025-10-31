@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridSearchCV Hyperparameter Tuner</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .container { background-color: #f4f7f6; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .section { margin-bottom: 25px; border: 1px solid #bdc3c7; padding: 15px; border-radius: 6px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #2c3e50; }
+        select, button { padding: 10px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; width: 100%; box-sizing: border-box; }
+        button { background-color: #3498db; color: white; cursor: pointer; border: none; transition: background-color 0.3s; }
+        button:hover { background-color: #2980b9; }
+        .result-box { background-color: #ecf0f1; padding: 15px; border-radius: 4px; margin-top: 15px; border-left: 5px solid #27ae60; }
+        .warning { color: #e74c3c; font-weight: bold; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <h1>Machine Learning Hyperparameter Tuner (GridSearchCV)</h1>
+
+    <div class="container">
+        <p class="warning">
+            ⚠️ **NOTE:** This is a frontend HTML/JavaScript simulation. The actual machine learning computation (the full Python script) requires a **Python backend** (like Flask or Django) running on a server to execute the heavy-duty libraries like NumPy and Scikit-learn.
+        </p>
+
+        <div class="section">
+            <h2>1. Data Upload (Simulation)</h2>
+            <label for="data-file">Upload Your Cleaned Data (e.g., TaskOrder.csv):</label>
+            <input type="file" id="data-file" accept=".csv">
+            <p style="font-size: 0.9em; color: #7f8c8d;">(In a real app, this file would be sent to the backend for processing.)</p>
+        </div>
+
+        <div class="section">
+            <h2>2. Hyperparameter Grid (RandomForestRegressor)</h2>
+            <label for="n_estimators">Number of Estimators:</label>
+            <select id="n_estimators" multiple size="3">
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+            </select>
+
+            <label for="max_depth">Max Depth:</label>
+            <select id="max_depth" multiple size="3">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="None" selected>None (Full Depth)</option>
+            </select>
+
+            <label for="min_samples_split">Min Samples Split:</label>
+            <select id="min_samples_split" multiple size="2">
+                <option value="2" selected>2</option>
+                <option value="5">5</option>
+            </select>
+
+            <label for="min_samples_leaf">Min Samples Leaf:</label>
+            <select id="min_samples_leaf" multiple size="2">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+            </select>
+        </div>
+
+        <button onclick="runGridSearch()">Run GridSearchCV</button>
+
+        <div class="section">
+            <h2>3. GridSearchCV Results</h2>
+            <div id="results" class="result-box">
+                <p>Results will appear here after the (simulated) calculation.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function runGridSearch() {
+            // In a real application, this function would send the selected hyperparameters
+            // and the uploaded data file to a Python backend endpoint (e.g., using fetch() or Axios).
+
+            const n_estimators = Array.from(document.getElementById('n_estimators').selectedOptions).map(option => option.value);
+            const max_depth = Array.from(document.getElementById('max_depth').selectedOptions).map(option => option.value);
+            const min_samples_split = Array.from(document.getElementById('min_samples_split').selectedOptions).map(option => option.value);
+            const min_samples_leaf = Array.from(document.getElementById('min_samples_leaf').selectedOptions).map(option => option.value);
+
+            // SIMULATION of result after the backend runs the Python code:
+            // The structure mimics the output of grid_search.best_params_ and grid_search.best_score_
+            const simulated_best_params = {
+                'regressor__n_estimators': 100,
+                'regressor__max_depth': 20,
+                'regressor__min_samples_split': 2,
+                'regressor__min_samples_leaf': 1
+            };
+            const simulated_best_score = 0.6542; // Example R-squared score
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h4>Calculating... (Simulated)</h4>';
+
+            // Set a timeout to simulate calculation time
+            setTimeout(() => {
+                resultsDiv.innerHTML = `
+                    <h4>✅ GridSearchCV Completed!</h4>
+                    <p><strong>Best Cross-Validation Score (R-squared):</strong> ${simulated_best_score.toFixed(4)}</p>
+                    <p><strong>Best Parameters Found:</strong></p>
+                    <ul>
+                        <li>n_estimators: ${simulated_best_params['regressor__n_estimators']}</li>
+                        <li>max_depth: ${simulated_best_params['regressor__max_depth']}</li>
+                        <li>min_samples_split: ${simulated_best_params['regressor__min_samples_split']}</li>
+                        <li>min_samples_leaf: ${simulated_best_params['regressor__min_samples_leaf']}</li>
+                    </ul>
+                    <p style="font-size: 0.8em; color: #7f8c8d;">(This is a simulated result based on the structure of your Python code.)</p>
+                `;
+            }, 2000); // 2 second delay for simulation
+        }
+    </script>
+
+</body>
+</html>
